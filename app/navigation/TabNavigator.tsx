@@ -1,16 +1,14 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 // Importar pantallas
 import HomeScreen from "../screens/HomeScreen";
 import PerfilScreen from "../screens/Perfil";
 import SettingsScreen from "../screens/Configuracion";
+import MapaAgro from "../screens/MapaAgro"; // ✅ Agregado
 
-// Crear navegadores
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
 
 const TabNavigator = () => {
   return (
@@ -24,6 +22,8 @@ const TabNavigator = () => {
             iconName = "person";
           } else if (route.name === "Configuración") {
             iconName = "settings";
+          } else if (route.name === "Mapa Agro") {
+            iconName = "map";
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -35,6 +35,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Perfil" component={PerfilScreen} />
       <Tab.Screen name="Configuración" component={SettingsScreen} />
+      <Tab.Screen name="Mapa Agro" component={MapaAgro} />
     </Tab.Navigator>
   );
 };
