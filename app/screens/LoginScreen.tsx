@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       formData.append("contrasenia", password);
   
       const response = await axios.post(
-        "http://192.168.1.8/ws/ApiE.php?api=buscarEst",
+        "http://192.168.137.1/ws/ApiE.php?api=buscarEst",
         formData.toString(), // Convertimos a string correctamente
         {
           headers: {
