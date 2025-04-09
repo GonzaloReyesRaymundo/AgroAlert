@@ -110,7 +110,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       <TouchableOpacity
         style={styles.forgotPassword}
-        onPress={() => navigation.navigate("RecuperarContrasena")}
+        onPress={() => navigation.navigate("RecuperarContrasenia")}
       >
         <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
@@ -119,7 +119,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       <TouchableOpacity
         style={styles.registerButton}
-        onPress={() => navigation.navigate("CrearUsuario")}
+        onPress={() => navigation.navigate("CrearUsuarioScreen")}
       >
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>

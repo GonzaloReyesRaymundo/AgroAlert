@@ -24,7 +24,7 @@ const SplashScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
         // Navegación automática
         setTimeout(() => {
-            navigation.navigate("Login");
+            navigation.navigate("LoginScreen");
         }, 3000);
     }, []);
 

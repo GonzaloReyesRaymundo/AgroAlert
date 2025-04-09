@@ -9,6 +9,7 @@ import CrearUsuarioScreen from "../screens/CrearUsuarioScreen";
 import MapaAgro from "../screens/MapaAgro";
 import CamaraScreen from "../screens/Camara";
 import TabNavigator from "./TabNavigator"; // Nuevo import
+import GaleriaScreen from "../screens/GaleriaScreen";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const AppNavigation = () => {
       <Stack.Screen name="MapaAgro" component={MapaAgro} />
       <Stack.Screen name="CamaraScreen" component={CamaraScreen} />
       <Stack.Screen name="HomeScreen" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="GaleriaScreen" component={GaleriaScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

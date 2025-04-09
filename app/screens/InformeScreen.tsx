@@ -6,19 +6,19 @@ const plagas = [
     id: 1,
     nombre: "Pulgón",
     descripcion: "Afecta principalmente cultivos de papa, tomate y chile. Detiene el proceso de maduración del fruto, debilitando las plantas y reduciendo su capacidad productiva. Además, pueden transmitir virus que agravan el daño a los cultivos.",
-    imagen: require("@/assets/images/plaga_pulgon.jpg"),
+    imagen: require("@/assets/images/Pulgon.jpeg"),
   },
   {
     id: 2,
     nombre: "Gusano Cogollero",
     descripcion: "Ataca cultivos de maíz y sorgo, dañando hojas y tallos, reduciendo la producción. Las larvas perforan las hojas y se alimentan del cogollo, lo que impide el crecimiento adecuado de la planta y disminuye significativamente la cosecha.",
-    imagen: require("@/assets/images/plaga_gusano.jpg"),
+    imagen: require("@/assets/images/gusano-cogollero.jpg"),
   },
   {
     id: 3,
     nombre: "Mosca Blanca",
     descripcion: "Se alimenta de la savia de las plantas, causando amarillamiento y transmisión de virus. Su rápida reproducción hace que los cultivos sean más vulnerables, debilitando las plantas y generando pérdidas económicas en la agricultura.",
-    imagen: require("@/assets/images/plaga_mosca.jpeg"),
+    imagen: require("@/assets/images/moscablanca.jpeg"),
   },
 ];
 
