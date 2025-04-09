@@ -1,8 +1,17 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
-import { TextInput, Button } from "react-native-paper";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Alert,
+  ActivityIndicator,
+  Image
+} from "react-native";
+import { TextInput } from "react-native-paper";
 import { NavigationProp } from "@react-navigation/native";
-import axios from "axios";  
+import axios from "axios";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface LoginScreenProps {
   navigation: NavigationProp<any>;
@@ -12,144 +21,191 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Función para iniciar sesión
-  interface LoginResponse {
-    error: boolean;
-    usuario?: any;
-    aviso?: string;
-  }
-  
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Por favor, ingresa tu correo y contraseña.");
       return;
     }
-  
+
+    setLoading(true);
+
     try {
-      // Formateamos los datos correctamente como URLSearchParams
       const formData = new URLSearchParams();
       formData.append("correo", email);
       formData.append("contrasenia", password);
-  
+
       const response = await axios.post(
-        "http://192.168.137.1/ws/ApiE.php?api=buscarEst",
-        formData.toString(), // Convertimos a string correctamente
+        "http://178.6.13.65/ws/ApiD1.php?api=buscarDoc",
+        formData.toString(),
         {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
-  
+
       console.log("Respuesta del servidor:", response.data);
-  
+
       if (!response.data || typeof response.data !== "object") {
-        Alert.alert("Error", "Respuesta inválida del servidor.");
-        return;
+        throw new Error("Respuesta inválida del servidor.");
       }
-  
-      const data: any = response.data;
-  
-      if (data.error === false && data.contenido?.length > 0) {
-        const usuario = data.contenido[0]; // Obtenemos el primer usuario
-      
-        if (usuario.correo === email && usuario.contrasenia === password) {
-          Alert.alert("Éxito", "Inicio de sesión exitoso.");
-          navigation.navigate("HomeScreen");
-        } else {
-          Alert.alert("Error", "Credenciales incorrectas.");
-        }
-      } else if (data.contenido?.length === 0) {
-        Alert.alert("Error", "El usuario no existe.");
+
+      const data = response.data as { success?: boolean; aviso?: string };
+
+      if (data.success === true) {
+        Alert.alert("Éxito", "Inicio de sesión exitoso.");
+        navigation.navigate("Home");
       } else {
-        Alert.alert("Error", data.aviso || "Credenciales incorrectas.");
+        Alert.alert("Error", data.aviso ?? "Usuario o contraseña incorrectos.");
       }
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error en la solicitud:", error);
       Alert.alert("Error", "Hubo un problema con el inicio de sesión.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido</Text>
+    <LinearGradient colors={["#a8e063", "#56ab2f"]} style={styles.container}>
+      <Text style={styles.title}>Iniciar Sesión</Text>
+      <Image source={require('../../assets/images/AgroAlert.png')} style={styles.image} />
 
       <TextInput
-        label="Correo Electrónico"
-        mode="outlined"
+        style={styles.input}
+        placeholder="Correo electrónico"
+        placeholderTextColor="#888"
         value={email}
         onChangeText={setEmail}
-        style={styles.input}
-        left={<TextInput.Icon icon="email" />}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <TextInput
-        label="Contraseña"
-        mode="outlined"
+        style={styles.input}
+        placeholder="Contraseña"
+        placeholderTextColor="#888"
+        secureTextEntry={!passwordVisible}
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={!passwordVisible}
-        style={styles.input}
-        left={<TextInput.Icon icon="lock" />}
-        right={
-          <TextInput.Icon
-            icon={passwordVisible ? "eye-off" : "eye"}
-            onPress={() => setPasswordVisible(!passwordVisible)}
-          />
-        }
+        autoCapitalize="none"
       />
 
-      <Button mode="contained" style={styles.loginButton} onPress={handleLogin}>
-        Iniciar Sesión
-      </Button>
+      <TouchableOpacity
+        style={styles.togglePasswordVisibility}
+        onPress={() => setPasswordVisible(!passwordVisible)}
+      >
+        <Text style={styles.togglePasswordText}>
+          {passwordVisible ? "Ocultar" : "Mostrar"}
+        </Text>
+      </TouchableOpacity>
 
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate("RecuperarContrasenia")}>
-          <Text style={styles.link}>Olvidé mi contraseña</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" />
+      ) : (
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("CrearUsuarioScreen")}>
-          <Text style={styles.link}>Nuevo usuario</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      )}
+
+      <TouchableOpacity
+        style={styles.forgotPassword}
+        onPress={() => navigation.navigate("RecuperarContrasena")}
+      >
+        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
+
+      <View style={styles.separator} />
+
+      <TouchableOpacity
+        style={styles.registerButton}
+        onPress={() => navigation.navigate("CrearUsuario")}
+      >
+        <Text style={styles.buttonText}>Registrarse</Text>
+      </TouchableOpacity>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#A3C585",
     justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#2E7D32",
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  input: {
-    backgroundColor: "white",
-    marginBottom: 15,
-  },
-  loginButton: {
-    backgroundColor: "#F4C430",
-    padding: 5,
-    borderRadius: 5,
-  },
-  footer: {
-    marginTop: 20,
     alignItems: "center",
   },
-  link: {
-    color: "#B71C1C",
-    fontSize: 14,
+  title: {
+    fontSize: 28,
+    color: "#0a5f00", // Verde fuerte
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  image: {
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+    marginBottom: 20,
+  },
+  input: {
+    width: "90%",
+    height: 50,
+    borderColor: "#4CAF50",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: "#333",
+    backgroundColor: "#FFF",
+  },
+  loginButton: {
+    width: "90%",
+    height: 50,
+    backgroundColor: "#81C784",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 10,
+  },
+  registerButton: {
+    width: "90%",
+    height: 50,
+    backgroundColor: "#81C784",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    fontSize: 25,
+    color: "white",
+    fontWeight: "bold",
+  },
+  forgotPassword: {
+    marginTop: 15,
+  },
+  forgotPasswordText: {
+    fontSize: 20,
+    color: "white",
     textDecorationLine: "underline",
+  },
+  separator: {
+    width: "90%",
+    height: 1,
+    backgroundColor: "#4CAF50",
+    marginVertical: 20,
+  },
+  togglePasswordVisibility: {
+    alignSelf: "flex-end",
+    marginBottom: 20,
+    marginRight: 30,
+  },
+  togglePasswordText: {
+    fontSize: 14,
+    color: "White",
   },
 });
 
 export default LoginScreen;
+
+
+
