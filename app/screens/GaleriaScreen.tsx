@@ -1,98 +1,192 @@
-import React from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ScrollView } from 'react-native';
-import { Card } from '@/components/ui/card';
+import React, { useState } from "react";
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Linking, Modal, TextInput } from "react-native";
+import { FontAwesome5 } from '@expo/vector-icons';
 
-type Plaga = {
-  id: string;
-  nombre: string;
-  imagen: string;
-  descripcion: string;
-  danos: string;
-  medidasPreventivas: string;
-  plantasAfectadas: string;
-};
-
-const plagasData: Plaga[] = [
+const plagas = [
   {
-    id: '1',
-    nombre: 'Pulgón Verde',
-    imagen: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Green_peach_aphid.jpg',
-    descripcion: 'Insecto pequeño que se alimenta de la savia de las plantas.',
-    danos: 'Deformación de hojas, transmisión de virus, debilitamiento.',
-    medidasPreventivas: 'Uso de trampas cromáticas, control biológico con mariquitas.',
-    plantasAfectadas: 'Chiles, frijol, jitomate.',
+    id: 1,
+    nombre: "Pulgón",
+    descripcion: "Afecta cultivos de papa, tomate y chile. Puede transmitir virus y reducir la capacidad productiva de las plantas.",
+    imagen: require("@/assets/images/plaga_pulgon.jpg"),
+    video: "https://www.youtube.com/watch?v=video_pulgon"
   },
   {
-    id: '2',
-    nombre: 'Mosca Blanca',
-    imagen: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Bemisia_tabaci_adult.jpg',
-    descripcion: 'Pequeña mosca que se posa en el envés de las hojas.',
-    danos: 'Debilitamiento de la planta y transmisión de enfermedades.',
-    medidasPreventivas: 'Control biológico, evitar exceso de fertilizantes nitrogenados.',
-    plantasAfectadas: 'Calabaza, tomate, pepino.',
+    id: 2,
+    nombre: "Gusano Cogollero",
+    descripcion: "Daña cultivos de maíz y sorgo. Perfora hojas y afecta la producción.",
+    imagen: require("@/assets/images/plaga_gusano.jpg"),
+    video: "https://www.youtube.com/watch?v=video_gusano"
   },
-  // Agrega más plagas según lo necesites
+  {
+    id: 3,
+    nombre: "Mosca Blanca",
+    descripcion: "Se alimenta de la savia de las plantas, causando amarillamiento y transmisión de virus.",
+    imagen: require("@/assets/images/plaga_mosca.jpeg"),
+    video: "https://www.youtube.com/watch?v=video_mosca"
+  },
 ];
 
-const GaleriaScreen: React.FC = () => {
+interface Plaga {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  imagen: any;
+  video: string;
+}
+
+const GaleriaScreen = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPlaga, setSelectedPlaga] = useState<Plaga | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filteredPlagas = plagas.filter(plaga => plaga.nombre.toLowerCase().includes(search.toLowerCase()));
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.titulo}>Plagas en Cultivos - Hidalgo</Text>
-      <FlatList
-        data={plagasData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Card className="bg-white rounded-2xl shadow-md mb-4 p-4 mx-2">
-            <Image source={{ uri: item.imagen }} style={styles.imagen} />
-            <Text style={styles.nombre}>{item.nombre}</Text>
-            <Text style={styles.etiqueta}>Descripción:</Text>
-            <Text style={styles.texto}>{item.descripcion}</Text>
-            <Text style={styles.etiqueta}>Daños:</Text>
-            <Text style={styles.texto}>{item.danos}</Text>
-            <Text style={styles.etiqueta}>Medidas Preventivas:</Text>
-            <Text style={styles.texto}>{item.medidasPreventivas}</Text>
-            <Text style={styles.etiqueta}>Plantas Afectadas:</Text>
-            <Text style={styles.texto}>{item.plantasAfectadas}</Text>
-          </Card>
-        )}
+      <Text style={styles.title}>Galería de Plagas</Text>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar plaga..."
+        placeholderTextColor="#FFF"
+        onChangeText={text => setSearch(text)}
       />
+      {filteredPlagas.map((plaga) => (
+        <View key={plaga.id} style={styles.card}>
+          <TouchableOpacity onPress={() => {
+            setSelectedPlaga(plaga);
+            setModalVisible(true);
+          }}>
+            <Image source={plaga.imagen} style={styles.image} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => {
+            setSelectedPlaga(plaga);
+            setModalVisible(true);
+          }}>
+            <Text style={styles.buttonText}>{plaga.nombre}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL(plaga.video)} style={styles.videoButton}>
+            <FontAwesome5 name="youtube" size={20} color="white" />
+            <Text style={styles.videoText}>Ver video</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{selectedPlaga?.nombre}</Text>
+            <Image source={selectedPlaga?.imagen} style={styles.modalImage} />
+            <Text style={styles.modalDescription}>{selectedPlaga?.descripcion}</Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E8F5E9',
     flex: 1,
-    paddingTop: 20,
+    backgroundColor: "#4CAF50",
+    padding: 10,
   },
-  titulo: {
+  title: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    textAlign: 'center',
-    marginBottom: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#FFF",
+    marginVertical: 15,
   },
-  imagen: {
-    width: '100%',
-    height: 180,
-    borderRadius: 12,
-    marginBottom: 8,
+  searchInput: {
+    backgroundColor: "#388E3C",
+    color: "#FFF",
+    padding: 10,
+    borderRadius: 20,
+    marginBottom: 15,
   },
-  nombre: {
+  card: {
+    backgroundColor: "#81C784",
+    borderRadius: 10,
+    padding: 15,
+    alignItems: "center",
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  image: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+  },
+  button: {
+    backgroundColor: "#388E3C",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  videoButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#D32F2F",
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  videoText: {
+    color: "#FFF",
+    marginLeft: 8,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#FFF",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
-    color: '#4CAF50',
-    marginBottom: 6,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
-  etiqueta: {
-    fontWeight: 'bold',
-    color: '#81C784',
-    marginTop: 8,
+  modalImage: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 10,
   },
-  texto: {
-    color: '#333',
-    marginBottom: 4,
+  modalDescription: {
+    fontSize: 14,
+    textAlign: "center",
+  },
+  closeButton: {
+    backgroundColor: "#388E3C",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  closeButtonText: {
+    color: "#FFF",
+    fontWeight: "bold",
   },
 });
 
