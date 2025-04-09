@@ -7,13 +7,16 @@ const plagas = [
     id: 1,
     nombre: "Pulgón",
     descripcion: "Afecta cultivos de papa, tomate y chile. Puede transmitir virus y reducir la capacidad productiva de las plantas.",
+
     imagen: require("@/assets/images/Pulgon.jpeg"),
+
     video: "https://www.youtube.com/watch?v=video_pulgon"
   },
   {
     id: 2,
     nombre: "Gusano Cogollero",
     descripcion: "Daña cultivos de maíz y sorgo. Perfora hojas y afecta la producción.",
+
     imagen: require("@/assets/images/gusano-cogollero.jpg"),
     video: "https://www.youtube.com/watch?v=video_gusano"
   },
@@ -22,6 +25,7 @@ const plagas = [
     nombre: "Mosca Blanca",
     descripcion: "Se alimenta de la savia de las plantas, causando amarillamiento y transmisión de virus.",
     imagen: require("@/assets/images/moscablanca.jpeg"),
+
     video: "https://www.youtube.com/watch?v=video_mosca"
   },
 ];
