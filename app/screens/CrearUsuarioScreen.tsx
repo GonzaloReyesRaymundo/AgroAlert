@@ -1,15 +1,6 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput as NativeInput,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import { NavigationProp } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -24,75 +15,83 @@ const CrearUsuarioScreen = ({ navigation }: Props) => {
   const [edad, setEdad] = useState("");
   const [localidad, setLocalidad] = useState("");
 
-  const handleCrearCuenta = () => {
-    console.log("Usuario creado");
-    // Aquí iría la lógica para crear el usuario
-  };
-
   return (
     <LinearGradient colors={["#a8e063", "#56ab2f"]} style={styles.gradient}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <Image
-            source={require("../../assets/images/perfil.png")}
-            style={styles.image}
-          />
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Imagen superior */}
+        <Image
+          source={require("../../assets/images/perfil.png")}
+          style={styles.image}
+        />
 
-          <Text style={styles.title}>Crear Usuario</Text>
+        {/* Título */}
+        <Text style={styles.title}>Crear Nuevo Usuario</Text>
 
-          <NativeInput
-            style={styles.input}
-            placeholder="Nombre"
-            placeholderTextColor="#888"
-            value={nombre}
-            onChangeText={setNombre}
-          />
+        {/* Campos con íconos */}
+        <TextInput
+          label="Nombre"
+          mode="outlined"
+          value={nombre}
+          onChangeText={setNombre}
+          style={styles.input}
+          left={<TextInput.Icon icon="account" />}
+        />
 
-          <NativeInput
-            style={styles.input}
-            placeholder="Apellido Paterno"
-            placeholderTextColor="#888"
-            value={apellidoPaterno}
-            onChangeText={setApellidoPaterno}
-          />
+        <TextInput
+          label="Apellido Paterno"
+          mode="outlined"
+          value={apellidoPaterno}
+          onChangeText={setApellidoPaterno}
+          style={styles.input}
+          left={<TextInput.Icon icon="account" />}
+        />
 
-          <NativeInput
-            style={styles.input}
-            placeholder="Apellido Materno"
-            placeholderTextColor="#888"
-            value={apellidoMaterno}
-            onChangeText={setApellidoMaterno}
-          />
+        <TextInput
+          label="Apellido Materno"
+          mode="outlined"
+          value={apellidoMaterno}
+          onChangeText={setApellidoMaterno}
+          style={styles.input}
+          left={<TextInput.Icon icon="account" />}
+        />
 
-          <NativeInput
-            style={styles.input}
-            placeholder="Edad"
-            placeholderTextColor="#888"
-            keyboardType="numeric"
-            value={edad}
-            onChangeText={setEdad}
-          />
+        <TextInput
+          label="Edad"
+          mode="outlined"
+          value={edad}
+          onChangeText={setEdad}
+          keyboardType="numeric"
+          style={styles.input}
+          left={<TextInput.Icon icon="calendar" />}
+        />
 
-          <NativeInput
-            style={styles.input}
-            placeholder="Localidad"
-            placeholderTextColor="#888"
-            value={localidad}
-            onChangeText={setLocalidad}
-          />
+        <TextInput
+          label="Localidad"
+          mode="outlined"
+          value={localidad}
+          onChangeText={setLocalidad}
+          style={styles.input}
+          left={<TextInput.Icon icon="map-marker" />}
+        />
 
-          <TouchableOpacity style={styles.button} onPress={handleCrearCuenta}>
-            <Text style={styles.buttonText}>Crear Usuario</Text>
-          </TouchableOpacity>
+        {/* Botón crear cuenta */}
+        <Button
+          mode="contained"
+          style={styles.button}
+          onPress={() => console.log("Usuario creado")}
+        >
+          Crear Cuenta
+        </Button>
 
-          <TouchableOpacity style={styles.link} onPress={() => navigation.goBack()}>
-            <Text style={styles.linkText}>¿Ya tienes una cuenta? Inicia sesión</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        {/* Botón volver */}
+        <Button
+          mode="outlined"
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          Volver
+        </Button>
+      </ScrollView>
     </LinearGradient>
   );
 };
@@ -102,60 +101,48 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 20,
+    alignItems: "center",
   },
   image: {
     width: 150,
     height: 150,
     marginBottom: 20,
+    borderRadius: 75,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#FFF",
-    marginBottom: 30,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    marginBottom: 20,
+    textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
+    textAlign: "center",
   },
   input: {
     width: "100%",
-    height: 50,
-    borderColor: "#4CAF50",
-    borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 20,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: "#333",
     backgroundColor: "#FFF",
+    marginBottom: 15,
+    borderRadius: 10,
   },
   button: {
     width: "100%",
-    height: 50,
     backgroundColor: "#4CAF50",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
     marginTop: 10,
+    borderRadius: 10,
+    paddingVertical: 8,
   },
-  buttonText: {
-    fontSize: 18,
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-  link: {
-    marginTop: 15,
-  },
-  linkText: {
-    fontSize: 14,
-    color: "#FFF",
-    textDecorationLine: "underline",
+  backButton: {
+    width: "100%",
+    marginTop: 10,
+    borderColor: "#fff",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 8,
   },
 });
 
 export default CrearUsuarioScreen;
-
