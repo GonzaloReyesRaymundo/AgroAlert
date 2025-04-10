@@ -1,7 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { TextInput, Button } from "react-native-paper";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput as NativeInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { NavigationProp } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -14,126 +24,138 @@ const CrearUsuarioScreen = ({ navigation }: Props) => {
   const [edad, setEdad] = useState("");
   const [localidad, setLocalidad] = useState("");
 
+  const handleCrearCuenta = () => {
+    console.log("Usuario creado");
+    // Aquí iría la lógica para crear el usuario
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear Nuevo Usuario</Text>
+    <LinearGradient colors={["#a8e063", "#56ab2f"]} style={styles.gradient}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <Image
+            source={require("../../assets/images/perfil.png")}
+            style={styles.image}
+          />
 
-      <TextInput
-        label="Nombre"
-        mode="outlined"
-        value={nombre}
-        onChangeText={setNombre}
-        style={styles.input}
-        left={<TextInput.Icon icon="account" />}
-      />
+          <Text style={styles.title}>Crear Usuario</Text>
 
-      <TextInput
-        label="Apellido Paterno"
-        mode="outlined"
-        value={apellidoPaterno}
-        onChangeText={setApellidoPaterno}
-        style={styles.input}
-        left={<TextInput.Icon icon="account" />}
-      />
+          <NativeInput
+            style={styles.input}
+            placeholder="Nombre"
+            placeholderTextColor="#888"
+            value={nombre}
+            onChangeText={setNombre}
+          />
 
-      <TextInput
-        label="Apellido Materno"
-        mode="outlined"
-        value={apellidoMaterno}
-        onChangeText={setApellidoMaterno}
-        style={styles.input}
-        left={<TextInput.Icon icon="account" />}
-      />
+          <NativeInput
+            style={styles.input}
+            placeholder="Apellido Paterno"
+            placeholderTextColor="#888"
+            value={apellidoPaterno}
+            onChangeText={setApellidoPaterno}
+          />
 
-      <TextInput
-        label="Edad"
-        mode="outlined"
-        value={edad}
-        onChangeText={setEdad}
-        keyboardType="numeric"
-        style={styles.input}
-        left={<TextInput.Icon icon="calendar" />}
-      />
+          <NativeInput
+            style={styles.input}
+            placeholder="Apellido Materno"
+            placeholderTextColor="#888"
+            value={apellidoMaterno}
+            onChangeText={setApellidoMaterno}
+          />
 
-      <TextInput
-        label="Localidad"
-        mode="outlined"
-        value={localidad}
-        onChangeText={setLocalidad}
-        style={styles.input}
-        left={<TextInput.Icon icon="map-marker" />}
-      />
+          <NativeInput
+            style={styles.input}
+            placeholder="Edad"
+            placeholderTextColor="#888"
+            keyboardType="numeric"
+            value={edad}
+            onChangeText={setEdad}
+          />
 
-      <Button mode="contained" style={styles.button} onPress={() => console.log("Usuario creado")}>
-        Crear Cuenta
-      </Button>
+          <NativeInput
+            style={styles.input}
+            placeholder="Localidad"
+            placeholderTextColor="#888"
+            value={localidad}
+            onChangeText={setLocalidad}
+          />
 
-      <Button mode="outlined" style={styles.backButton} onPress={() => navigation.goBack()}>
-        Volver
-      </Button>
-    </ScrollView>
+          <TouchableOpacity style={styles.button} onPress={handleCrearCuenta}>
+            <Text style={styles.buttonText}>Crear Usuario</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.link} onPress={() => navigation.goBack()}>
+            <Text style={styles.linkText}>¿Ya tienes una cuenta? Inicia sesión</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flexGrow: 1,
-    backgroundColor: "#E8F5E9", // Verde muy claro, simboliza naturaleza, salud, frescura
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
+  image: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#2E7D32", // Verde oscuro, simboliza naturaleza, crecimiento y estabilidad
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#6D4C41", // Marrón suave, simboliza tierra, estabilidad, raíces
-    textAlign: "center",
-    marginBottom: 20,
+    color: "#FFF",
+    marginBottom: 30,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   input: {
     width: "100%",
-    backgroundColor: "white", // Blanco, simboliza pureza y claridad
-    marginBottom: 15,
-    borderColor: "#795548", // Borde marrón tierra
+    height: 50,
+    borderColor: "#4CAF50",
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 5,
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: "#333",
+    backgroundColor: "#FFF",
   },
   button: {
     width: "100%",
-    backgroundColor: "#F9A825", // Amarillo-anaranjado, simboliza alerta, energía y vitalidad
-    paddingVertical: 10,
-    borderRadius: 5,
+    height: 50,
+    backgroundColor: "#4CAF50",
+    borderRadius: 10,
+    justifyContent: "center",
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
-    color: "#795548", // Marrón tierra, armoniza con el input
+    fontSize: 18,
+    color: "#FFF",
     fontWeight: "bold",
-    fontSize: 16,
   },
-  backButton: {
-    width: "100%",
-    marginTop: 10,
-    borderColor: "#A67B5B", // Marrón más oscuro, simboliza contraste y estabilidad
-    borderWidth: 2,
-    paddingVertical: 8,
-    borderRadius: 5,
-    alignItems: "center",
+  link: {
+    marginTop: 15,
   },
-  backButtonText: {
-    color: "#A67B5B", // Marrón oscuro, mantiene el contraste con el fondo
-    fontWeight: "bold",
-    fontSize: 16,
+  linkText: {
+    fontSize: 14,
+    color: "#FFF",
+    textDecorationLine: "underline",
   },
 });
 
-
-
 export default CrearUsuarioScreen;
+
