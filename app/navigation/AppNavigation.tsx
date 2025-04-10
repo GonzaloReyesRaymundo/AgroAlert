@@ -22,7 +22,7 @@ const AppNavigation = () => {
       <Stack.Screen name="CrearUsuarioScreen" component={CrearUsuarioScreen} />
       <Stack.Screen name="MapaAgro" component={MapaAgro} />
       <Stack.Screen name="CamaraScreen" component={CamaraScreen} />
-      <Stack.Screen name="HomeScreen" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="GaleriaScreen" component={GaleriaScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
