@@ -11,6 +11,7 @@ import CamaraScreen from "../screens/Camara";
 import TabNavigator from "./TabNavigator"; // Nuevo import
 import GaleriaScreen from "../screens/GaleriaScreen";
 import AdministradorScreen from "../screens/AdministradorScreen";
+import InformeScreen from "../screens/InformeScreen";
 
 const Stack = createStackNavigator();
 
@@ -23,9 +24,11 @@ const AppNavigation = () => {
       <Stack.Screen name="CrearUsuarioScreen" component={CrearUsuarioScreen} />
       <Stack.Screen name="MapaAgro" component={MapaAgro} />
       <Stack.Screen name="CamaraScreen" component={CamaraScreen} />
-      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="HomeScreen" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="GaleriaScreen" component={GaleriaScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AdministradorScreen" component={AdministradorScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="InformeScreen" component={InformeScreen} options={{ headerShown: false }} />
+      {/* Agrega más pantallas aquí según sea necesario */}
       
     </Stack.Navigator>
   );

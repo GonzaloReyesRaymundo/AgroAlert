@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { NavigationProp } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,30 +9,74 @@ interface Props {
 }
 
 const CrearUsuarioScreen = ({ navigation }: Props) => {
-  const [nombre, setNombre] = useState("");
-  const [apellidoPaterno, setApellidoPaterno] = useState("");
-  const [apellidoMaterno, setApellidoMaterno] = useState("");
-  const [edad, setEdad] = useState("");
-  const [localidad, setLocalidad] = useState("");
+  const [nombreUsuario, setnombreUsuario] = useState("");
+  const [apPaternoUsuario, setapPaternoUsuario] = useState("");
+  const [emailUsuario, setemailUsuario] = useState("");
+  const [contraseniaUsuariol, setcontraseniaUsuariol] = useState("");
+
+  const validarContrasenia = (pwd: string): boolean => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return regex.test(pwd);
+  };
+
+  const crearCuenta = async () => {
+    if (!validarContrasenia(contraseniaUsuariol)) {
+      Alert.alert(
+        "Contraseña inválida",
+        "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número."
+      );
+      return;
+    }
+
+    try {
+      // Enviar datos como parámetros de formulario
+      const response = await fetch("http://178.6.7.246/wsA/ApiU.php?api=guardarUsu", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded", // Aquí cambiamos el tipo de contenido
+        },
+        body: new URLSearchParams({
+          nombreUsuario: nombreUsuario,
+          apPaternoUsuario: apPaternoUsuario,
+          emailUsuario: emailUsuario,
+          contraseniaUsuariol: contraseniaUsuariol,
+        }).toString(),
+      });
+
+      const data = await response.json();
+
+      if (data.error === false) {
+        Alert.alert("¡Éxito!", data.aviso);
+        // Opcional: limpiar campos
+        setnombreUsuario("");
+        setapPaternoUsuario("");
+        setemailUsuario("");
+        setcontraseniaUsuariol("");
+        // Navegar a otra pantalla si lo deseas
+      } else {
+        Alert.alert("Error", data.aviso || "No se pudo crear el usuario.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Hubo un problema al conectar con el servidor.");
+      console.error("Error al crear usuario:", error);
+    }
+  };
 
   return (
     <LinearGradient colors={["#a8e063", "#56ab2f"]} style={styles.gradient}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Imagen superior */}
         <Image
           source={require("../../assets/images/perfil.png")}
           style={styles.image}
         />
 
-        {/* Título */}
         <Text style={styles.title}>Crear Nuevo Usuario</Text>
 
-        {/* Campos con íconos */}
         <TextInput
           label="Nombre"
           mode="outlined"
-          value={nombre}
-          onChangeText={setNombre}
+          value={nombreUsuario}
+          onChangeText={setnombreUsuario}
           style={styles.input}
           left={<TextInput.Icon icon="account" />}
         />
@@ -40,50 +84,40 @@ const CrearUsuarioScreen = ({ navigation }: Props) => {
         <TextInput
           label="Apellido Paterno"
           mode="outlined"
-          value={apellidoPaterno}
-          onChangeText={setApellidoPaterno}
+          value={apPaternoUsuario}
+          onChangeText={setapPaternoUsuario}
           style={styles.input}
           left={<TextInput.Icon icon="account" />}
         />
 
         <TextInput
-          label="Apellido Materno"
+          label="Correo"
           mode="outlined"
-          value={apellidoMaterno}
-          onChangeText={setApellidoMaterno}
+          value={emailUsuario}
+          onChangeText={setemailUsuario}
+          keyboardType="email-address"
           style={styles.input}
-          left={<TextInput.Icon icon="account" />}
+          left={<TextInput.Icon icon="email" />}
         />
 
         <TextInput
-          label="Edad"
+          label="Contraseña"
           mode="outlined"
-          value={edad}
-          onChangeText={setEdad}
-          keyboardType="numeric"
+          value={contraseniaUsuariol}
+          onChangeText={setcontraseniaUsuariol}
+          secureTextEntry
           style={styles.input}
-          left={<TextInput.Icon icon="calendar" />}
+          left={<TextInput.Icon icon="lock" />}
         />
 
-        <TextInput
-          label="Localidad"
-          mode="outlined"
-          value={localidad}
-          onChangeText={setLocalidad}
-          style={styles.input}
-          left={<TextInput.Icon icon="map-marker" />}
-        />
-
-        {/* Botón crear cuenta */}
         <Button
           mode="contained"
           style={styles.button}
-          onPress={() => console.log("Usuario creado")}
+          onPress={crearCuenta}
         >
           Crear Cuenta
         </Button>
 
-        {/* Botón volver */}
         <Button
           mode="outlined"
           style={styles.backButton}

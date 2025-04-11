@@ -25,6 +25,12 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [loading, setLoading] = useState(false);
   const [rol, setRol] = useState("usuario"); // "usuario" o "admin"
 
+  interface ApiResponse {
+    error: boolean;
+    aviso?: string;
+    contenido?: Array<{ emailUsuario: string; contraseniaUsuariol: string }>;
+  }
+  
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Por favor, ingresa tu correo y contraseña.");
@@ -35,34 +41,41 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
     try {
       const formData = new URLSearchParams();
-      formData.append("correo", email);
-      formData.append("contrasenia", password);
+      formData.append("emailUsuario", email);
+      formData.append("contraseniaUsuariol", password);
 
       const response = await axios.post(
-        "http://192.168.137.106/ws/ApiD1.php?api=buscarDoc",
+        "http://178.6.7.246/wsA/ApiU.php?api=buscarUsu",
         formData.toString(),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
 
-      console.log("Respuesta del servidor:", response.data);
+      const data = response.data as ApiResponse;
 
-      if (!response.data || typeof response.data !== "object") {
+      if (!data || typeof data !== "object") {
         throw new Error("Respuesta inválida del servidor.");
       }
 
-      const data = response.data as { success?: boolean; aviso?: string };
+      // Verifica si hay contenido válido
+      if (data.error === false && Array.isArray(data.contenido) && data.contenido.length > 0) {
+        const usuario = data.contenido[0];
 
-      if (data.success === true) {
-        Alert.alert("Éxito", "Inicio de sesión exitoso.");
-        if (rol === "admin") {
-          navigation.navigate("AdministradorScreen");
+        // Comparar email y contraseña
+        if (usuario.emailUsuario === email && usuario.contraseniaUsuariol === password) {
+          Alert.alert("Éxito", "Inicio de sesión exitoso.");
+
+          if (rol === "admin") {
+            navigation.navigate("AdministradorScreen");
+          } else {
+            navigation.navigate("HomeScreen");
+          }
         } else {
-          navigation.navigate("Home");
+          Alert.alert("Error", "Credenciales incorrectas.");
         }
       } else {
-        Alert.alert("Error", data.aviso ?? "Usuario o contraseña incorrectos.");
+        Alert.alert("Error", data.aviso || "Usuario no encontrado.");
       }
     } catch (error: any) {
       console.error("Error en la solicitud:", error);
@@ -125,7 +138,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       <TouchableOpacity
         style={styles.forgotPassword}
-        onPress={() => navigation.navigate("RecuperarContrasena")}
+        onPress={() => navigation.navigate("RecuperarContrasenia")}
       >
         <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
@@ -134,7 +147,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       <TouchableOpacity
         style={styles.registerButton}
-        onPress={() => navigation.navigate("CrearUsuario")}
+        onPress={() => navigation.navigate("CrearUsuarioScreen")}
       >
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>

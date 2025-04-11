@@ -6,17 +6,74 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  Alert,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker';
 
 const AdministradorScreen = () => {
-  const [nombre, setNombre] = useState('');
-  const [categoria, setCategoria] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [prevencion, setPrevencion] = useState('');
-  const [cura, setCura] = useState('');
-  const [planta, setPlanta] = useState('');
+  const [nombrePlaga, setnombrePlaga] = useState('');
+  const [categoria, setcategoria] = useState('');
+  const [descripcion, setdescripcion] = useState('');
+  const [medidasPreventivas, setmedidasPreventivas] = useState('');
+  const [Cura, setCura] = useState('');
+  const [tipoPlanta, settipoPlanta] = useState('');
+  const [urlImagen, seturlImagen] = useState('');
+
+  const guardarPlaga = async () => {
+    if (!nombrePlaga || !categoria || !descripcion || !medidasPreventivas || !Cura || !tipoPlanta || !urlImagen) {
+      Alert.alert('Error', 'Todos los campos son obligatorios');
+      return;
+    }
+
+    Alert.alert(
+      'Confirmación',
+      '¿Seguro que quieres guardar esta plaga?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Guardar',
+          onPress: async () => {
+            try {
+              const response = await fetch('http://178.6.7.246/wsA/ApiU.php?api=guardarPlaga', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  nombrePlaga,
+                  categoria,
+                  descripcion,
+                  medidasPreventivas,
+                  Cura,
+                  tipoPlanta,
+                  urlImagen,
+                }).toString(),
+              });
+
+              const data = await response.json();
+
+              if (data.error === false) {
+                Alert.alert('¡Éxito!', data.aviso);
+                setnombrePlaga('');
+                setcategoria('');
+                setdescripcion('');
+                setmedidasPreventivas('');
+                setCura('');
+                settipoPlanta('');
+                seturlImagen('');
+              } else {
+                Alert.alert('Error', data.aviso || 'No se pudo guardar la plaga.');
+              }
+            } catch (error) {
+              Alert.alert('Error', 'Hubo un problema al conectar con el servidor.');
+              console.error('Error al guardar la plaga:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   return (
     <LinearGradient colors={['#a8e063', '#56ab2f']} style={styles.gradient}>
@@ -27,15 +84,15 @@ const AdministradorScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Ej. Gusano cogollero"
-          value={nombre}
-          onChangeText={setNombre}
+          value={nombrePlaga}
+          onChangeText={setnombrePlaga}
         />
 
         <Text style={styles.label}>Categoría</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={categoria}
-            onValueChange={(itemValue: string) => setCategoria(itemValue)}
+            onValueChange={(itemValue) => setcategoria(itemValue)}
             style={styles.picker}
           >
             <Picker.Item label="Selecciona una categoría" value="" />
@@ -52,7 +109,7 @@ const AdministradorScreen = () => {
           style={[styles.input, styles.multiline]}
           placeholder="Describe la plaga"
           value={descripcion}
-          onChangeText={setDescripcion}
+          onChangeText={setdescripcion}
           multiline
           numberOfLines={4}
         />
@@ -61,8 +118,8 @@ const AdministradorScreen = () => {
         <TextInput
           style={[styles.input, styles.multiline]}
           placeholder="Ej. Rotación de cultivos"
-          value={prevencion}
-          onChangeText={setPrevencion}
+          value={medidasPreventivas}
+          onChangeText={setmedidasPreventivas}
           multiline
           numberOfLines={3}
         />
@@ -71,7 +128,7 @@ const AdministradorScreen = () => {
         <TextInput
           style={[styles.input, styles.multiline]}
           placeholder="Ej. Aplicación de pesticida biológico"
-          value={cura}
+          value={Cura}
           onChangeText={setCura}
           multiline
           numberOfLines={3}
@@ -81,11 +138,23 @@ const AdministradorScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Ej. Maíz, Trigo"
-          value={planta}
-          onChangeText={setPlanta}
+          value={tipoPlanta}
+          onChangeText={settipoPlanta}
         />
 
-        <TouchableOpacity style={styles.button}>
+        <Text style={styles.label}>URL de Imagen</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="https://ejemplo.com/imagen.jpg"
+          value={urlImagen}
+          onChangeText={seturlImagen}
+        />
+
+        {urlImagen ? (
+          <Image source={{ uri: urlImagen }} style={styles.imagePreview} />
+        ) : null}
+
+        <TouchableOpacity style={styles.button} onPress={guardarPlaga}>
           <Text style={styles.buttonText}>Guardar Plaga</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -106,9 +175,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 20,
     textAlign: 'center',
-    textShadowColor: 'rgba(0,0,0,0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   label: {
     fontSize: 16,
@@ -142,16 +208,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   buttonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    marginTop: 10,
+    borderRadius: 10,
   },
 });
 
