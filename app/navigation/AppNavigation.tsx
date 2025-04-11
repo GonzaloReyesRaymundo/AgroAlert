@@ -24,6 +24,8 @@ const AppNavigation = () => {
       <Stack.Screen name="CamaraScreen" component={CamaraScreen} />
       <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="GaleriaScreen" component={GaleriaScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AdministradorScreen" component={TabNavigator} options={{ headerShown: false }} />
+      {/* Agrega más pantallas aquí según sea necesario */}
     </Stack.Navigator>
   );
 };
