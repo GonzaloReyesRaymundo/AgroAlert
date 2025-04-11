@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       formData.append("contrasenia", password);
 
       const response = await axios.post(
-        "http://192.168.1.12/ws/ApiD1.php?api=buscarDoc",
+        "http://192.168.137.106/ws/ApiD1.php?api=buscarDoc",
         formData.toString(),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
