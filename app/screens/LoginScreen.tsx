@@ -6,12 +6,13 @@ import {
   Text,
   Alert,
   ActivityIndicator,
-  Image
+  Image,
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import { NavigationProp } from "@react-navigation/native";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
+import { Picker } from "@react-native-picker/picker";
 
 interface LoginScreenProps {
   navigation: NavigationProp<any>;
@@ -22,6 +23,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rol, setRol] = useState("usuario"); // "usuario" o "admin"
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -54,7 +56,11 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       if (data.success === true) {
         Alert.alert("Éxito", "Inicio de sesión exitoso.");
-        navigation.navigate("Home");
+        if (rol === "admin") {
+          navigation.navigate("AdministradorScreen");
+        } else {
+          navigation.navigate("Home");
+        }
       } else {
         Alert.alert("Error", data.aviso ?? "Usuario o contraseña incorrectos.");
       }
@@ -69,7 +75,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   return (
     <LinearGradient colors={["#a8e063", "#56ab2f"]} style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
-      <Image source={require('../../assets/images/AgroAlert.png')} style={styles.image} />
+      <Image source={require("../../assets/images/AgroAlert.png")} style={styles.image} />
 
       <TextInput
         style={styles.input}
@@ -100,6 +106,15 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         </Text>
       </TouchableOpacity>
 
+      <Picker
+        selectedValue={rol}
+        onValueChange={(itemValue) => setRol(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Iniciar como Usuario" value="usuario" />
+        <Picker.Item label="Iniciar como Administrador" value="admin" />
+      </Picker>
+
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" />
       ) : (
@@ -110,7 +125,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       <TouchableOpacity
         style={styles.forgotPassword}
-        onPress={() => navigation.navigate("RecuperarContrasenia")}
+        onPress={() => navigation.navigate("RecuperarContrasena")}
       >
         <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
@@ -119,7 +134,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       <TouchableOpacity
         style={styles.registerButton}
-        onPress={() => navigation.navigate("CrearUsuarioScreen")}
+        onPress={() => navigation.navigate("CrearUsuario")}
       >
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>
@@ -135,7 +150,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    color: "#0a5f00", // Verde fuerte
+    color: "#0a5f00",
     fontWeight: "bold",
     marginBottom: 20,
   },
@@ -201,7 +216,15 @@ const styles = StyleSheet.create({
   },
   togglePasswordText: {
     fontSize: 14,
-    color: "White",
+    color: "white",
+  },
+  picker: {
+    width: "90%",
+    height: 50,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginBottom: 20,
+    color: "#333",
   },
 });
 
