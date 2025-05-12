@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       formData.append("contraseniaUsuariol", password);
 
       const response = await axios.post(
-        "http://178.6.7.246/wsA/ApiU.php?api=buscarUsu",
+        "http://192.168.1.54/wsA/ApiU.php?api=buscarUsu",
         formData.toString(),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
