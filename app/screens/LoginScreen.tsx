@@ -12,7 +12,7 @@ import { TextInput } from "react-native-paper";
 import { NavigationProp } from "@react-navigation/native";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
-import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginScreenProps {
   navigation: NavigationProp<any>;
@@ -23,14 +23,17 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [rol, setRol] = useState("usuario"); // "usuario" o "admin"
 
   interface ApiResponse {
     error: boolean;
     aviso?: string;
-    contenido?: Array<{ emailUsuario: string; contraseniaUsuariol: string }>;
+    contenido?: Array<{
+      emailUsuario: string;
+      contraseniaUsuariol: string;
+      rol: string;
+    }>;
   }
-  
+
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Por favor, ingresa tu correo y contraseña.");
@@ -58,18 +61,20 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         throw new Error("Respuesta inválida del servidor.");
       }
 
-      // Verifica si hay contenido válido
       if (data.error === false && Array.isArray(data.contenido) && data.contenido.length > 0) {
         const usuario = data.contenido[0];
 
-        // Comparar email y contraseña
+        // Validación de credenciales
         if (usuario.emailUsuario === email && usuario.contraseniaUsuariol === password) {
-          Alert.alert("Éxito", "Inicio de sesión exitoso.");
-
-          if (rol === "admin") {
+          await AsyncStorage.setItem("usuario", JSON.stringify(usuario));
+          if (usuario.rol === "admin") {
+            Alert.alert("Éxito", "Bienvenido administrador.");
             navigation.navigate("AdministradorScreen");
-          } else {
+          } else if (usuario.rol === "visita") {
+            Alert.alert("Éxito", "Inicio de sesión exitoso.");
             navigation.navigate("HomeScreen");
+          } else {
+            Alert.alert("Error", "Rol de usuario no válido.");
           }
         } else {
           Alert.alert("Error", "Credenciales incorrectas.");
@@ -119,15 +124,6 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         </Text>
       </TouchableOpacity>
 
-      <Picker
-        selectedValue={rol}
-        onValueChange={(itemValue) => setRol(itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Iniciar como Usuario" value="usuario" />
-        <Picker.Item label="Iniciar como Administrador" value="admin" />
-      </Picker>
-
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" />
       ) : (
@@ -136,12 +132,6 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity
-        style={styles.forgotPassword}
-        onPress={() => navigation.navigate("RecuperarContrasenia")}
-      >
-        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-      </TouchableOpacity>
 
       <View style={styles.separator} />
 
@@ -158,90 +148,64 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     justifyContent: "center",
-    alignItems: "center",
   },
   title: {
     fontSize: 28,
-    color: "#0a5f00",
     fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center",
+    color: "#fff",
   },
   image: {
     width: 120,
     height: 120,
-    resizeMode: "contain",
+    alignSelf: "center",
     marginBottom: 20,
   },
   input: {
-    width: "90%",
-    height: 50,
-    borderColor: "#4CAF50",
-    borderWidth: 1,
-    borderRadius: 10,
+    marginBottom: 15,
+    backgroundColor: "white",
+  },
+  togglePasswordVisibility: {
+    alignItems: "flex-end",
     marginBottom: 20,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: "#333",
-    backgroundColor: "#FFF",
   },
-  loginButton: {
-    width: "90%",
-    height: 50,
-    backgroundColor: "#81C784",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  registerButton: {
-    width: "90%",
-    height: 50,
-    backgroundColor: "#81C784",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    fontSize: 25,
-    color: "white",
+  togglePasswordText: {
+    color: "#fff",
     fontWeight: "bold",
   },
+  loginButton: {
+    backgroundColor: "#4CAF50",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
   forgotPassword: {
-    marginTop: 15,
+    alignItems: "center",
+    marginTop: 10,
   },
   forgotPasswordText: {
-    fontSize: 20,
-    color: "white",
+    color: "#fff",
     textDecorationLine: "underline",
   },
   separator: {
-    width: "90%",
-    height: 1,
-    backgroundColor: "#4CAF50",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
     marginVertical: 20,
   },
-  togglePasswordVisibility: {
-    alignSelf: "flex-end",
-    marginBottom: 20,
-    marginRight: 30,
-  },
-  togglePasswordText: {
-    fontSize: 14,
-    color: "white",
-  },
-  picker: {
-    width: "90%",
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    marginBottom: 20,
-    color: "#333",
+  registerButton: {
+    backgroundColor: "#2E7D32",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
   },
 });
 
 export default LoginScreen;
-
-
-

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { NavigationProp } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import SHA256 from "crypto-js/sha256";
 
 interface Props {
   navigation: NavigationProp<any>;
@@ -29,17 +30,19 @@ const CrearUsuarioScreen = ({ navigation }: Props) => {
     }
 
     try {
-      // Enviar datos como parámetros de formulario
-      const response = await fetch("http://178.6.7.246/wsA/ApiU.php?api=guardarUsu", {
+      // Aplica hash SHA-256 a la contraseña antes de enviarla
+      const hashedPassword = SHA256(contraseniaUsuariol).toString();
+
+      const response = await fetch("http://192.168.1.17/wsA/ApiU.php?api=guardarUsu", {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded", // Aquí cambiamos el tipo de contenido
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
           nombreUsuario: nombreUsuario,
           apPaternoUsuario: apPaternoUsuario,
           emailUsuario: emailUsuario,
-          contraseniaUsuariol: contraseniaUsuariol,
+          contraseniaUsuariol: hashedPassword, // usa la contraseña encriptada
         }).toString(),
       });
 
@@ -47,12 +50,10 @@ const CrearUsuarioScreen = ({ navigation }: Props) => {
 
       if (data.error === false) {
         Alert.alert("¡Éxito!", data.aviso);
-        // Opcional: limpiar campos
         setnombreUsuario("");
         setapPaternoUsuario("");
         setemailUsuario("");
         setcontraseniaUsuariol("");
-        // Navegar a otra pantalla si lo deseas
       } else {
         Alert.alert("Error", data.aviso || "No se pudo crear el usuario.");
       }
